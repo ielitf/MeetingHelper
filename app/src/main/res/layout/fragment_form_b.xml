@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/my_back">
+
+    <TextClock
+        android:id="@+id/data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:format24Hour="yyyy/MM/dd    EE    HH:mm:ss"
+        android:text="2019/09/20    星期五"
+        android:textColor="@color/white"
+        android:textSize="@dimen/date" />
+
+    <LinearLayout
+        android:id="@+id/time_remaining_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/time_remaining_bg"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/space_10">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="距离会议结束"
+            android:textColor="@color/my_back"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="还有"
+            android:textColor="@color/my_back"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/time_remaining_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10:25"
+            android:textColor="@color/my_orange"
+            android:textSize="@dimen/time_remain"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="会议名称："
+                android:textSize="@dimen/meeting_cur"
+                android:textColor="@color/white"
+                />
+            <TextView
+                android:id="@+id/meeting_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="研发部软件组信发讨论会"
+                android:textSize="@dimen/meeting_cur"
+                android:textColor="@color/white"
+                />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/meeting_cur_margin"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="会议时间："
+                android:textSize="@dimen/meeting_cur"
+                android:textColor="@color/white"
+                />
+            <TextView
+                android:id="@+id/meeting_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2019年12月4日    08:30 - 11:00"
+                android:textSize="@dimen/meeting_cur"
+                android:textColor="@color/white"
+                />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/meeting_cur_margin"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="组织部门："
+                android:textSize="@dimen/meeting_cur"
+                android:textColor="@color/white"
+                />
+            <TextView
+                android:id="@+id/meeting_department"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="研发部 软件组"
+                android:textSize="@dimen/meeting_cur"
+                android:textColor="@color/white"
+                />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/meeting_cur_margin"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="会议主持："
+                android:textSize="@dimen/meeting_cur"
+                android:textColor="@color/white"
+                />
+            <TextView
+                android:id="@+id/meeting_order"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="李逍遥 18210131783"
+                android:textSize="@dimen/meeting_cur"
+                android:textColor="@color/white"
+                />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:background="@color/white"
+    android:padding="20dp"
+    >
+
+    <LinearLayout
+        android:id="@+id/meeting_next_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下一会议："
+            android:textColor="@color/my_back"
+            android:textSize="@dimen/space_30"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/meeting_name_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="软件组新项目讨论会"
+            android:textColor="@color/black2"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/meeting_detail_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2019年12月4日    13:30 - 16:00   会议主持:李逍遥  18210131783"
+            android:textColor="@color/black2"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/room_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@+id/meeting_next_ll"
+        android:text="会议室编号：119"
+        android:textColor="@color/black2"
+        android:textSize="@dimen/meeting_room_num"
+        android:visibility="visible" />
+
+</RelativeLayout>
+
+</RelativeLayout>

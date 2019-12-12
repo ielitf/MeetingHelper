@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#5A6377</color>
+    <color name="colorPrimaryDark">#5A6377</color>
+    <color name="colorAccent">#5A6377</color>
+
+    <color name="black">#000000</color>
+    <color name="black2">#222222</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="back_A1">#00000000</color>
+    <color name="back_A2">#33000000</color>
+
+    <color name="back_B2">#88415E5A</color>
+    <color name="back_B">#00000000</color>
+
+    <color name="space_line2">#999999</color>
+    <color name="space_line">#999999</color>
+
+
+
+    <color name="transparent">#00000000</color>
+    <color name="transparent1">#22000000</color>
+    <color name="lightgreen">#7cd12e</color>
+
+    <color name="my_orange">#FF9800</color>
+    <color name="my_blue">#1236CB</color>
+
+
+    <color name="my_back">#4977FD</color>
+
+</resources>
