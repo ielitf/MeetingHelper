@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.ceiv.meetinghelper.R;
 /**
- * 会议结束
+ * 会议开始之前和结束之后
  */
 public class DFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";

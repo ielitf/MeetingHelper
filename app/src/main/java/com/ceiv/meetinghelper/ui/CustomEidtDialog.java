@@ -151,7 +151,7 @@ public class CustomEidtDialog extends Dialog {
 //                context.startActivity(i);
 
                 CustomEidtDialog.this.cancel();
-                dataBaseQueryListenerA.onDataBaseQueryListenerA(ed_devicenumvalue);
+//                dataBaseQueryListenerA.onDataBaseQueryListenerA(ed_devicenumvalue);
                 dataBaseQueryListenerB.onDataBaseQueryListenerB(ed_devicenumvalue);
                 context.stopService(intent);
                 context.startService(intent);

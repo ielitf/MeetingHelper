@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class DateTimeUtil {
     private static DateTimeUtil instance;
@@ -18,6 +19,21 @@ public class DateTimeUtil {
             instance = new DateTimeUtil();
         }
         return instance;
+    }
+
+    //将毫秒数转化为时钟 分+秒
+    public String transTimeToClock(Long time) {
+        SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");//这里想要只保留分秒可以写成"mm:ss"
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+        String hms = formatter.format(time);
+        return hms;
+    }
+    //将毫秒数转化为时钟 时+分+秒
+    public String transTimeToClock2(Long time) {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");//这里想要只保留分秒可以写成"mm:ss"
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+        String hms = formatter.format(time);
+        return hms;
     }
 
     //将日期转化为毫秒数

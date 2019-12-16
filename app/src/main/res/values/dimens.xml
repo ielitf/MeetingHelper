@@ -2,12 +2,13 @@
 <resources>
 
     <dimen name="date">20sp</dimen>
+    <dimen name="time_remain_title">12sp</dimen>
     <dimen name="time_remain">26sp</dimen>
     <dimen name="meeting_next_title">30sp</dimen>
     <dimen name="meeting_next_content">30sp</dimen>
     <dimen name="meeting_cur">24sp</dimen>
     <dimen name="meeting_cur_margin">20dp</dimen>
-    <dimen name="meeting_room_num">8dp</dimen>
+    <dimen name="meeting_room_num">10sp</dimen>
 
 
 

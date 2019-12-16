@@ -26,8 +26,7 @@ public class MyApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		CrashHandler crashHandler = CrashHandler.getInstance();
-		crashHandler.init(this);
+//		CrashHandler.getInstance().init(this);
 		SharePreferenceManager.init(getApplicationContext(), SHARED_PREFERENCE_NAME);
 		if (SharePreferenceManager.getIsFirstUse()) {
 //			SDCardUtils.writeTxt("001",CodeConstants.ROOM_NUMBER);

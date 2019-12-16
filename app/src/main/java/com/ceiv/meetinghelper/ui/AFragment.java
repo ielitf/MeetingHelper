@@ -42,7 +42,6 @@ public class AFragment extends Fragment {
         context = getActivity();
         initViews(convertView);
 
-        LogUtil.d("===", "模板A准备就绪");
         return convertView;
     }
 
