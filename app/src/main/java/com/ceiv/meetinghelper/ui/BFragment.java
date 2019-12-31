@@ -1,6 +1,7 @@
 package com.ceiv.meetinghelper.ui;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,6 +22,7 @@ import com.ceiv.meetinghelper.greendao.DaoSession;
 import com.ceiv.meetinghelper.greendao.MqttMeetingListBeanDao;
 import com.ceiv.meetinghelper.listener.DataBaseQueryListenerB;
 import com.ceiv.meetinghelper.listener.FragmentCallBackB;
+import com.ceiv.meetinghelper.log4j.LogUtils;
 import com.ceiv.meetinghelper.utils.DateTimeUtil;
 import com.ceiv.meetinghelper.utils.LogUtil;
 import com.ceiv.meetinghelper.utils.SharedPreferenceTools;
@@ -34,6 +36,7 @@ import java.util.TimerTask;
  * 会议开始5分钟后 -- 会议结束前5分钟
  */
 public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQueryListenerB {
+    private String TAG = getClass().getSimpleName();
     private Context context;
     private DateTimeUtil dateTimeUtil;
     private TextView room_num,time_remain,meeting_name,meeting_date,meeting_department,meeting_order;
@@ -99,7 +102,8 @@ public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQ
                     meeting_order.setText("");
                     break;
                 case 4://显示下一会议内容。
-                    if((curIndex +1) < size){
+                    LogUtils.i(TAG,"今日会议size="+myMeetingList.size() +"/当前会议所在位置index="+ curIndex);
+                    if((curIndex +1) < myMeetingList.size()){
                         meeting_name_next.setText(myMeetingList.get(curIndex +1).getName());
                         String startTime = DateTimeUtil.getInstance().transTimeToHHMM(myMeetingList.get(curIndex +1).getStartDate());
                         String endTime = DateTimeUtil.getInstance().transTimeToHHMM(myMeetingList.get(curIndex +1).getEndDate());
@@ -150,7 +154,7 @@ public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQ
     }
     private void getStuDao() {
         // 创建数据
-        DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(getActivity(), "meetingList.db", null);
+        DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(getActivity(), "meetingHelper.db", null);
         daoMaster = new DaoMaster(devOpenHelper.getWritableDb());
         daoSession = daoMaster.newSession();
         meetingListBeanDao = daoSession.getMqttMeetingListBeanDao();
@@ -161,7 +165,7 @@ public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQ
      */
     @Override
     public void TransDataB(String topic, List mList) {
-        LogUtil.i("========BFragment", "topic:" + topic + ";----mList:" + mList.toString());
+        LogUtils.i("========BFragment", "topic:" + topic + ";----mList:" + mList.toString());
         if (topic.equals(MqttService.TOPIC_MEETING_CUR)) { //当前会议
             myCurMeetingList.clear();
             myCurMeetingList.addAll(mList);
@@ -181,7 +185,7 @@ public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQ
         if (topic.equals(MqttService.TOPIC_MEETING_LIST)) { //今日会议
             myMeetingList.clear();
             myMeetingList.addAll(mList);
-
+            LogUtils.i(TAG, "数据库中今日会议列表myMeetingList:" + myMeetingList.toString());
             checkNextMeeting();
         }
     }
@@ -198,10 +202,12 @@ public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQ
                 .between(dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 00:00:00"), dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 23:59:59")))
                 .orderAsc(MqttMeetingListBeanDao.Properties.EndDate)
                 .build().list());
+        LogUtils.i(TAG, "数据库中今日会议列表meetingListQuery:" + meetingListQuery.toString());
         if (meetingListQuery.size() >= 0) {
 //                    TransDataB(MqttService.TOPIC_MEETING_LIST, meetingListQuery);
             myMeetingList.clear();
             myMeetingList.addAll(meetingListQuery);
+            LogUtils.i(TAG, "数据库中今日会议列表myMeetingList:" + myMeetingList.toString());
         }
 //            }
 //        }, 60, 60 * 1000 * 15);
@@ -211,7 +217,7 @@ public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQ
 //        checkTodayMeeting();
 
         if(myCurMeetingList.size() != 0){
-        for(int i = 0; i < size; i++){
+        for(int i = 0; i < myMeetingList.size(); i++){
             if(myMeetingList.get(i).getId() == myCurMeetingList.get(0).getMeetingId()){
                 curIndex = i;
                 break;
@@ -302,6 +308,10 @@ public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQ
         }
     }
 
+    public static void check(){
+        LogUtils.i("BFragment", "===check===");
+
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();

@@ -1,11 +1,14 @@
 package com.ceiv.meetinghelper.ui;
 
 import android.app.ActivityManager;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -14,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -39,6 +43,7 @@ import com.ceiv.meetinghelper.listener.MeetingOverListener;
 import com.ceiv.meetinghelper.listener.MeetingStartListener;
 import com.ceiv.meetinghelper.listener.NetEvevtListener;
 import com.ceiv.meetinghelper.listener.TodayMeetingCallBack;
+import com.ceiv.meetinghelper.log4j.LogUtils;
 import com.ceiv.meetinghelper.utils.ApkUtils;
 import com.ceiv.meetinghelper.utils.DateTimeUtil;
 import com.ceiv.meetinghelper.utils.LogUtil;
@@ -100,22 +105,33 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
     private Timer checkNetTimer;
     private CheckNetTask checkNetTask;
     private long periodTime = 1000*8;//8s
+    //以下用于管理息屏和亮屏
+    private DevicePolicyManager policyManager;
+    private PowerManager mPowerManager;
+    private PowerManager.WakeLock mWakeLock;
+    private ComponentName adminReceiver;
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case 0x1:
+                case 0x1://开始前5分钟
+                    checkScreenOn(null);
                     viewPager.setCurrentItem(0);
                     break;
-                case 0x2:
+                case 0x2://会议中
+                    checkScreenOn(null);
                     viewPager.setCurrentItem(1);
+                    BFragment.check();
                     break;
-                case 0x3:
+                case 0x3://会议结束前5分钟
+                    checkScreenOn(null);
                     viewPager.setCurrentItem(2);
                     break;
-                case 0x4:
+                case 0x4://开机默认显示/会议结束
                     viewPager.setCurrentItem(3);
+                    checkScreenOff(null);
                     break;
                 case 0x33:
                     Toast.makeText(MainActivity.this,"网络连接不可用，请检查网络配置",Toast.LENGTH_LONG).show();
@@ -134,7 +150,10 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         dateTimeUtil = DateTimeUtil.getInstance();
-//        templateId = SharePreferenceManager.getMeetingMuBanType();//获取存储的磨板类型，默认值：“1”
+        adminReceiver = new ComponentName(MainActivity.this, ScreenOffAdminReceiver.class);
+        mPowerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        policyManager = (DevicePolicyManager) MainActivity.this.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        checkAndTurnOnDeviceManager(null);
         getStuDao();
         viewPager = findViewById(R.id.viewPager);
         frags.add(aFragment);
@@ -143,15 +162,9 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
         frags.add(dFragment);
         pagerAdapter = new MyViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
-        viewPager.setOffscreenPageLimit(2);
-        viewPager.setCurrentItem(1);
-
-//        if (templateId == 1) {
-//            viewPager.setCurrentItem(0);
-//        } else {
-//            viewPager.setCurrentItem(1);
-//        }
-
+        viewPager.setOffscreenPageLimit(4);
+        checkScreenOn(null);
+        viewPager.setCurrentItem(4);
         //删除数据库中今天之前的会议信息
         List<MqttMeetingListBean> userList = meetingListBeanDao.queryBuilder()
                 .where(MqttMeetingListBeanDao.Properties.StartDate.lt(dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 00:00:00")))
@@ -163,17 +176,17 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
         NetBroadcastReceiver.setNetEvevtListener(this);
         MqttService.setCurMeetingCallBack(this);
         MqttService.setTodayMeetingCallBack(this);
-//        MqttService.setMeetingStartListener(this);
-//        MqttService.setMeetingGoingListener(this);
-//        MqttService.setMeetingOverListener(this);
-//        MqttService.setMeetingEndListener(this);
+        MqttService.setMeetingStartListener(this);
+        MqttService.setMeetingGoingListener(this);
+        MqttService.setMeetingOverListener(this);
+        MqttService.setMeetingEndListener(this);
         //开启服务
         if (!isServiceRunning(String.valueOf(MqttService.class))) {
             intent = new Intent(this, MqttService.class);
             startService(intent);
-            LogUtil.e("====Main", "service is started");
+            LogUtils.d("====Main", "service is started");
         } else {
-            LogUtil.i("===服务正在运行", "return");
+            LogUtils.d("===服务正在运行", "return");
             return;
         }
         //定时检查版本更新
@@ -184,7 +197,36 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
            }
        }, 1000 * 60 * 30, 1000 * 60 * 60);
     }
+    /**
+     * @param view 检测并去激活设备管理器权限
+     */
+    public void checkAndTurnOnDeviceManager(View view) {
+        Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminReceiver);
+        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "开启后就可以使用锁屏功能了...");
+        startActivityForResult(intent, 0);
+    }
 
+    /**
+     * @param view 熄屏
+     */
+    public void checkScreenOff(View view) {
+        boolean admin = policyManager.isAdminActive(adminReceiver);
+        if (admin) {
+            LogUtils.i(TAG,"息屏");
+            policyManager.lockNow();
+        } else {
+            ToastUtils.showToast(this,"没有设备管理权限");
+        }
+    }
+    /**
+     * @param view 亮屏
+     */
+    public void checkScreenOn(View view) {
+        mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
+        mWakeLock.acquire(1);
+        mWakeLock.release();
+    }
     /**
      * 获取StudentDao
      */
@@ -195,11 +237,25 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
         daoSession = daoMaster.newSession();
         meetingListBeanDao = daoSession.getMqttMeetingListBeanDao();
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        isOpen();
+    }
+    private void isOpen() {
+        if (policyManager.isAdminActive(adminReceiver)) {//判断超级管理员是否激活
+            ToastUtils.showToast(this,"设备已被激活");
+        } else {
+            ToastUtils.showToast(this,"设备没有被激活");
+        }
+    }
     /**
      * 会议开始后的前5分钟
      */
     @Override
     public void setDataMeetingStart(String topic, String strMessage) {
+        LogUtils.i(TAG, "topic:" + topic + ";----strMessage:" + strMessage);
         Message msg = new Message();
         msg.what = 0x1;
         handler.sendMessage(msg);
@@ -209,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
      */
     @Override
     public void setDataMeetingGoing(String topic, String strMessage) {
+        LogUtils.i(TAG, "topic:" + topic + ";----strMessage:" + strMessage);
         Message msg = new Message();
         msg.what = 0x2;
         handler.sendMessage(msg);
@@ -218,6 +275,7 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
      */
     @Override
     public void setDataMeetingOver(String topic, String strMessage) {
+        LogUtils.i(TAG, "topic:" + topic + ";----strMessage:" + strMessage);
         Message msg = new Message();
         msg.what = 0x3;
         handler.sendMessage(msg);
@@ -227,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
      */
     @Override
     public void setDataMeetingEnd(String topic, String strMessage) {
+        LogUtils.i(TAG, "topic:" + topic + ";----strMessage:" + strMessage);
         Message msg = new Message();
         msg.what = 0x4;
         handler.sendMessage(msg);
@@ -237,12 +296,12 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
      */
     @Override
     public void setDataCur(String topic, String strMessage) {
-        LogUtil.w("===Main", "topic:" + topic + ";----strMessage:" + strMessage);
+        LogUtils.i("===Main", "topic:" + topic + ";----strMessage:" + strMessage);
         if (!"".equals(strMessage) && !"[]".equals(strMessage) && strMessage != null && !TextUtils.isEmpty(strMessage)) {
             templateId = SharePreferenceManager.getMeetingMuBanType();//读取存储的模板类型
             curMeeting.clear();
             curMeeting.addAll(JSON.parseArray(strMessage, MqttMeetingCurrentBean.class));
-            LogUtil.w("===curMeeting", "topic:" + topic + ";----curMeeting:" + curMeeting.toString());
+            LogUtils.i("===curMeeting", "topic:" + topic + ";----curMeeting:" + curMeeting.toString());
             fragmentCallBackB.TransDataB(topic, curMeeting);
         }
     }
