@@ -33,9 +33,9 @@ public class MyApplication extends Application {
 //			SDCardUtils.writeTxt("192.168.10.2:1883",CodeConstants.IP_HOST_NEWS);
 //			SDCardUtils.writeTxt("192.168.10.120:8080",CodeConstants.IP_HOST_APP);
 			//首次初始化
-			SharedPreferenceTools.putValuetoSP(getApplicationContext(), "mqttIp", "aids.zdhs.com.cn:1883");
-			SharedPreferenceTools.putValuetoSP(getApplicationContext(), "ServiceIp", "https://aids.zdhs.com.cn");
-			SharedPreferenceTools.putValuetoSP(getApplicationContext(), "DeviceNum", "999");
+			SharedPreferenceTools.putValuetoSP(getApplicationContext(), CodeConstants.MQTT_IP, "aids.zdhs.com.cn:1883");
+			SharedPreferenceTools.putValuetoSP(getApplicationContext(), CodeConstants.SERVICE_IP, "https://aids.zdhs.com.cn");
+			SharedPreferenceTools.putValuetoSP(getApplicationContext(), CodeConstants.DEVICE_NUM, "999");
 			SharePreferenceManager.setIsFirstUse(false);
 		}
 

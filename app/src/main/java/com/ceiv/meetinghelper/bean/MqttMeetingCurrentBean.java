@@ -7,6 +7,7 @@ public class MqttMeetingCurrentBean {
     private String meetingName;//会议主题名称
     private String roomName;//会议室名称
     private long startDate;//开始时间
+    private String bookPersion;
 
     public String getIsOpen() {
         return isOpen;

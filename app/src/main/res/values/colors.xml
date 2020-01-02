@@ -28,5 +28,6 @@
 
 
     <color name="my_back">#4977FD</color>
+    <color name="my_back_center">#233E5E</color>
 
 </resources>

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/background">
+    android:background="@color/my_back_center">
 
     <TextClock
         android:id="@+id/data"
@@ -60,6 +60,29 @@
             android:textColor="@color/my_orange"
             android:textSize="@dimen/time_remain"
             android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="600dp"
+        android:layout_height="400dp"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="不忘初心，牢记使命"
+            android:textSize="50sp"
+            android:textColor="@color/my_orange" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="会议即将结束，请大家整理好桌椅，并携带随身物品，有序离开。\n\n随手关灯，谢谢！"
+            android:lineSpacingExtra="20dp"
+            android:textSize="30sp"
+            android:textColor="@color/white" />
     </LinearLayout>
 
 </RelativeLayout>

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/my_back">
+    android:background="@mipmap/meeting_back_h">
 
     <TextClock
         android:id="@+id/data"
@@ -158,7 +158,6 @@
         android:layout_width="match_parent"
         android:layout_height="220dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/white"
         android:paddingLeft="20dp">
 
         <LinearLayout
