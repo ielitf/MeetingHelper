@@ -22,6 +22,7 @@ import com.ceiv.meetinghelper.listener.MeetingStartListener;
 import com.ceiv.meetinghelper.listener.TodayMeetingCallBack;
 import com.ceiv.meetinghelper.log4j.LogUtils;
 import com.ceiv.meetinghelper.utils.SharedPreferenceTools;
+import com.ceiv.meetinghelper.utils.Utils;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -126,7 +127,7 @@ public class MqttService extends Service {
         String IP_HOST_NEWS= (String) SharedPreferenceTools.getValueofSP(MqttService.this,"mqttIp","aids.zdhs.com.cn");
 //        IP_HOST_NEWS = SDCardUtils.readTxt(CodeConstants.IP_HOST_NEWS);
         String URL_QUERY = "tcp://" + IP_HOST_NEWS;
-        clientId = roomNum + "_client_id_mp_helper";
+        clientId = roomNum + "_client_id_mp_helper" + "_" + Utils.getDeviceDDID(MqttService.this);
 //        clientId = roomNum + "_client_id_mp_";
         TOPIC_MEETING_LIST = roomNum + "_meetList";
         TOPIC_MEETING_CUR = roomNum + "_currtMeet";
@@ -171,7 +172,7 @@ public class MqttService extends Service {
                                        @Override
                                        public void connectionLost(Throwable cause) {
                                            //连接丢失，进行重新连接
-                                           LogUtils.i("===connectionLost", "connectionLost");
+                                           LogUtils.i(TAG, "mqtt connectionLost");
                                            if (isNetworkAvailable()) {
                                                reconnectIfNecessary();
                                            }
@@ -179,9 +180,9 @@ public class MqttService extends Service {
 
                                        @Override
                                        public void messageArrived(String topic, MqttMessage message) {
-                                           LogUtils.i("===", "接收消息主题 : " + topic + ";接收消息Qos :" + message.getQos());
+                                           LogUtils.i(TAG, "接收消息主题 : " + topic + "/接收消息Qos :" + message.getQos());
                                            String str = new String(message.getPayload());
-                                           LogUtils.i("===MqttService", "topic:" + topic + ";----message:" + str);
+                                           LogUtils.i(TAG, "topic:" + topic + ";----message:" + str);
                                            if (TOPIC_MEETING_CUR.equals(topic)) {
                                                curMeetingCallBack.setDataCur(topic, str);
                                            } else if (TOPIC_MEETING_LIST.equals(topic)) {
@@ -200,7 +201,7 @@ public class MqttService extends Service {
                                        @Override
                                        public void deliveryComplete(IMqttDeliveryToken token) {
                                            long messageId = token.getMessageId();
-                                           LogUtils.i("===", "messageId=:" + messageId);
+                                           LogUtils.i(TAG, "messageId=:" + messageId);
                                        }
                                    }
 
@@ -233,7 +234,7 @@ public class MqttService extends Service {
 
     /*连接服务器，并订阅消息主题*/
     private void connect() {
-        LogUtils.i("===connect", "connect");
+        LogUtils.i(TAG, "===connect===");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -251,13 +252,13 @@ public class MqttService extends Service {
      * 调用init() 方法之后，调用此方法。
      */
     public void startReconnect() {
-        LogUtils.i("===startReconnect", "startReconnect");
+        LogUtils.i(TAG, "===startReconnect===");
         scheduler = Executors.newSingleThreadScheduledExecutor();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 if (!mqttClient.isConnected() && isNetworkAvailable()) {
-                    LogUtils.i("===startReconnect", "开始连接");
+                    LogUtils.i(TAG, "===startReconnect 开始连接");
                     connect();
                 }
             }
@@ -329,7 +330,7 @@ public class MqttService extends Service {
     private final BroadcastReceiver mConnectivityReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            LogUtils.i("===BroadcastReceiver", "Connectivity Changed...");
+            LogUtils.i(TAG, "===BroadcastReceiver : Connectivity Changed...");
             if (!isNetworkAvailable()) {
 //                Toast.makeText(context, "网络连接不可用，请检查网络!", Toast.LENGTH_SHORT).show();
 //                scheduler.shutdownNow();//如果当前无网络，调用此方法，此时打开app会崩溃，
@@ -343,7 +344,7 @@ public class MqttService extends Service {
     public void onDestroy() {
         stopForeground(true);// 停止前台服务--参数：表示是否移除之前的通知
         super.onDestroy();
-        LogUtils.i("====service", "service.onDestroy() is called");
+        LogUtils.i(TAG, "service.onDestroy() is called");
         try {
             unregisterReceiver(mConnectivityReceiver);
             if (mqttClient.isConnected()){
@@ -351,7 +352,7 @@ public class MqttService extends Service {
             }
             mqttClient = null;
         } catch (MqttException e) {
-            LogUtils.i("====", "Something went wrong!" + e.getMessage());
+            LogUtils.e(TAG, "Something went wrong!" + e.getMessage());
             e.printStackTrace();
         }
     }

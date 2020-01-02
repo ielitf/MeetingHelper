@@ -10,8 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import com.ceiv.meetinghelper.R;
-import com.ceiv.meetinghelper.listener.DataBaseQueryListenerA;
-import com.ceiv.meetinghelper.listener.DataBaseQueryListenerB;
+import com.ceiv.meetinghelper.listener.RoomNumChangeListener;
 import com.ceiv.meetinghelper.utils.SharedPreferenceTools;
 import com.ceiv.meetinghelper.utils.ToastUtils;
 
@@ -31,19 +30,15 @@ public class CustomEidtDialog extends Dialog {
     private EditText ed_devicenum;//num
     private Context context;
     private Intent intent;
-    private static DataBaseQueryListenerA dataBaseQueryListenerA;
-    private static DataBaseQueryListenerB dataBaseQueryListenerB;
+    private static RoomNumChangeListener roomNumChangeListener;
 
     //确定文本和取消文本的显示的内容
     private String yesStr, noStr;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
     private onYesOnclickListener yesOnclickListener;//确定按钮被点击了的监听器
 
-    public static void setOnDataBaseQueryListenerA(DataBaseQueryListenerA listener) {
-        dataBaseQueryListenerA = listener;
-    }
-    public static void setOnDataBaseQueryListenerB(DataBaseQueryListenerB listener) {
-        dataBaseQueryListenerB = listener;
+    public static void setOnRoomNumChangeListener(RoomNumChangeListener listener) {
+        roomNumChangeListener = listener;
     }
 
     public CustomEidtDialog(@NonNull Context context,Intent intent) {
@@ -151,8 +146,7 @@ public class CustomEidtDialog extends Dialog {
 //                context.startActivity(i);
 
                 CustomEidtDialog.this.cancel();
-//                dataBaseQueryListenerA.onDataBaseQueryListenerA(ed_devicenumvalue);
-                dataBaseQueryListenerB.onDataBaseQueryListenerB(ed_devicenumvalue);
+                roomNumChangeListener.setChangedRoomNum(ed_devicenumvalue);
                 context.stopService(intent);
                 context.startService(intent);
 

@@ -1,7 +1,6 @@
 package com.ceiv.meetinghelper.ui;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,11 +19,10 @@ import com.ceiv.meetinghelper.control.CodeConstants;
 import com.ceiv.meetinghelper.greendao.DaoMaster;
 import com.ceiv.meetinghelper.greendao.DaoSession;
 import com.ceiv.meetinghelper.greendao.MqttMeetingListBeanDao;
-import com.ceiv.meetinghelper.listener.DataBaseQueryListenerB;
+import com.ceiv.meetinghelper.listener.RoomNumChangeListener;
 import com.ceiv.meetinghelper.listener.FragmentCallBackB;
 import com.ceiv.meetinghelper.log4j.LogUtils;
 import com.ceiv.meetinghelper.utils.DateTimeUtil;
-import com.ceiv.meetinghelper.utils.LogUtil;
 import com.ceiv.meetinghelper.utils.SharedPreferenceTools;
 
 import java.util.ArrayList;
@@ -35,13 +33,13 @@ import java.util.TimerTask;
 /**
  * 会议开始5分钟后 -- 会议结束前5分钟
  */
-public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQueryListenerB {
+public class BFragment extends Fragment implements FragmentCallBackB {
     private String TAG = getClass().getSimpleName();
     private Context context;
     private DateTimeUtil dateTimeUtil;
     private TextView room_num,time_remain,meeting_name,meeting_date,meeting_department,meeting_order;
     private TextView meeting_name_next,meeting_detail_next;
-    private static String roomNum;//会议室编号
+    private  String roomNum;//会议室编号
     private List<MqttMeetingListBean> myMeetingList = new ArrayList<>();
     private List<MqttMeetingListBean> meetingListQuery = new ArrayList<>();
     private List<MqttMeetingCurrentBean> myCurMeetingList = new ArrayList<>();
@@ -96,6 +94,7 @@ public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQ
                     }
                     break;
                 case 3://当前会议结束清空当前会议显示
+                    room_num.setText("会议室编号：" + roomNum);
                     meeting_name.setText("");
                     meeting_date.setText("");
                     meeting_department.setText("");
@@ -135,7 +134,6 @@ public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQ
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         MainActivity.setFragmentCallBackB(this);
-        CustomEidtDialog.setOnDataBaseQueryListenerB(this);
         roomNum = (String) SharedPreferenceTools.getValueofSP(context, CodeConstants.DEVICE_NUM, "");//获取会议室编号
         room_num.setText("会议室编号：" + roomNum);
 //        showRemainTime(3610000);
@@ -165,7 +163,7 @@ public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQ
      */
     @Override
     public void TransDataB(String topic, List mList) {
-        LogUtils.i("========BFragment", "topic:" + topic + ";----mList:" + mList.toString());
+        LogUtils.i(TAG, "topic:" + topic + ";----mList:" + mList.toString());
         if (topic.equals(MqttService.TOPIC_MEETING_CUR)) { //当前会议
             myCurMeetingList.clear();
             myCurMeetingList.addAll(mList);
@@ -202,9 +200,7 @@ public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQ
                 .between(dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 00:00:00"), dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 23:59:59")))
                 .orderAsc(MqttMeetingListBeanDao.Properties.EndDate)
                 .build().list());
-        LogUtils.i(TAG, "数据库中今日会议列表meetingListQuery:" + meetingListQuery.toString());
         if (meetingListQuery.size() >= 0) {
-//                    TransDataB(MqttService.TOPIC_MEETING_LIST, meetingListQuery);
             myMeetingList.clear();
             myMeetingList.addAll(meetingListQuery);
             LogUtils.i(TAG, "数据库中今日会议列表myMeetingList:" + myMeetingList.toString());
@@ -259,13 +255,11 @@ public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQ
     }
 
     /**
-     * 当切换会议室编号后，通知系统重新查询数据库，并更新页面
-     *
-     * @param roomNum
+     * 更新会议室编号后
      */
-    @Override
-    public void onDataBaseQueryListenerB(String roomNum) {
-        room_num.setText("会议室编号：" + roomNum);
+    protected void whenRoomNumChanged(String roomNum){
+        LogUtils.i("BFragment", "更新会议室编号:"+roomNum);
+        this.roomNum = roomNum;
         //设置当前会议
         if (checkCurMeetingTask != null) {
             checkCurMeetingTask.cancel();
@@ -286,9 +280,7 @@ public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQ
                 .between(dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 00:00:00"), dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 23:59:59")))
                 .orderAsc(MqttMeetingListBeanDao.Properties.EndDate)
                 .build().list());
-//        TransDataB(MqttService.TOPIC_MEETING_LIST, meetingListQuery);
         if (meetingListQuery.size() >= 0) {
-//                    TransDataB(MqttService.TOPIC_MEETING_LIST, meetingListQuery);17
             myMeetingList.clear();
             myMeetingList.addAll(meetingListQuery);
         }
@@ -312,6 +304,7 @@ public class BFragment extends Fragment implements FragmentCallBackB , DataBaseQ
         LogUtils.i("BFragment", "===check===");
 
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();

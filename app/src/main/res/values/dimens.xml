@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="date">20sp</dimen>
-    <dimen name="time_remain_title">12sp</dimen>
-    <dimen name="time_remain">26sp</dimen>
-    <dimen name="meeting_next_title">30sp</dimen>
+    <dimen name="date">30sp</dimen>
+    <dimen name="time_remain_title">20sp</dimen>
+    <dimen name="time_remain">40sp</dimen>
+    <dimen name="meeting_next_title">50sp</dimen>
     <dimen name="meeting_next_content">30sp</dimen>
-    <dimen name="meeting_cur">24sp</dimen>
+    <dimen name="meeting_cur">40sp</dimen>
     <dimen name="meeting_cur_margin">20dp</dimen>
-    <dimen name="meeting_room_num">10sp</dimen>
-
+    <dimen name="meeting_room_num">14sp</dimen>
 
 
     <dimen name="text_margin">16dp</dimen>

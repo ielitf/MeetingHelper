@@ -9,7 +9,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -42,6 +41,7 @@ import com.ceiv.meetinghelper.listener.MeetingGoingListener;
 import com.ceiv.meetinghelper.listener.MeetingOverListener;
 import com.ceiv.meetinghelper.listener.MeetingStartListener;
 import com.ceiv.meetinghelper.listener.NetEvevtListener;
+import com.ceiv.meetinghelper.listener.RoomNumChangeListener;
 import com.ceiv.meetinghelper.listener.TodayMeetingCallBack;
 import com.ceiv.meetinghelper.log4j.LogUtils;
 import com.ceiv.meetinghelper.utils.ApkUtils;
@@ -71,13 +71,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements CurMeetingCallBack, TodayMeetingCallBack ,NetEvevtListener
-, MeetingStartListener, MeetingGoingListener, MeetingOverListener, MeetingEndListener {
+, MeetingStartListener, MeetingGoingListener, MeetingOverListener, MeetingEndListener, RoomNumChangeListener {
     protected String TAG = getClass().getSimpleName();
     private static FragmentCallBackA fragmentCallBackA;
     private static FragmentCallBackB fragmentCallBackB;
     private static FragmentCallBackC fragmentCallBackC;
     private static FragmentCallBackD fragmentCallBackD;
-    private List<Fragment> frags = new ArrayList<>();
+    private List<android.support.v4.app.Fragment> frags = new ArrayList<>();
 
     private LauncherActivity launcherActivity = new LauncherActivity();
     private AFragment aFragment = new AFragment();
@@ -117,16 +117,13 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
             super.handleMessage(msg);
             switch (msg.what) {
                 case 0x1://开始前5分钟
-                    checkScreenOn(null);
                     viewPager.setCurrentItem(0);
                     break;
                 case 0x2://会议中
-                    checkScreenOn(null);
                     viewPager.setCurrentItem(1);
                     BFragment.check();
                     break;
                 case 0x3://会议结束前5分钟
-                    checkScreenOn(null);
                     viewPager.setCurrentItem(2);
                     break;
                 case 0x4://开机默认显示/会议结束
@@ -164,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
         viewPager.setAdapter(pagerAdapter);
         viewPager.setOffscreenPageLimit(4);
         checkScreenOn(null);
-        viewPager.setCurrentItem(4);
+        viewPager.setCurrentItem(3);
         //删除数据库中今天之前的会议信息
         List<MqttMeetingListBean> userList = meetingListBeanDao.queryBuilder()
                 .where(MqttMeetingListBeanDao.Properties.StartDate.lt(dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 00:00:00")))
@@ -180,14 +177,14 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
         MqttService.setMeetingGoingListener(this);
         MqttService.setMeetingOverListener(this);
         MqttService.setMeetingEndListener(this);
+        CustomEidtDialog.setOnRoomNumChangeListener(this);
         //开启服务
         if (!isServiceRunning(String.valueOf(MqttService.class))) {
             intent = new Intent(this, MqttService.class);
             startService(intent);
-            LogUtils.d("====Main", "service is started");
+            LogUtils.d(TAG, "开启 Mqtt 服务");
         } else {
-            LogUtils.d("===服务正在运行", "return");
-            return;
+            LogUtils.d(TAG, "===服务正在运行===");
         }
         //定时检查版本更新
        new Timer().schedule(new TimerTask() {
@@ -255,30 +252,51 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
      */
     @Override
     public void setDataMeetingStart(String topic, String strMessage) {
+        checkScreenOn(null);
         LogUtils.i(TAG, "topic:" + topic + ";----strMessage:" + strMessage);
         Message msg = new Message();
         msg.what = 0x1;
         handler.sendMessage(msg);
+        fragmentCallBackA.TransDataA(topic,null);
     }
     /**
      * 会议进行的过程中
      */
     @Override
     public void setDataMeetingGoing(String topic, String strMessage) {
+        checkScreenOn(null);
         LogUtils.i(TAG, "topic:" + topic + ";----strMessage:" + strMessage);
         Message msg = new Message();
         msg.what = 0x2;
         handler.sendMessage(msg);
+
+        if (!"".equals(strMessage) && !"[]".equals(strMessage) && strMessage != null && !TextUtils.isEmpty(strMessage)) {
+            templateId = SharePreferenceManager.getMeetingMuBanType();//读取存储的模板类型
+            curMeeting.clear();
+            curMeeting.addAll(JSON.parseArray(strMessage, MqttMeetingCurrentBean.class));
+            LogUtils.i(TAG, "===curMeeting   topic:" + topic + ";----curMeeting:" + curMeeting.toString());
+            fragmentCallBackB.TransDataB(topic, curMeeting);
+        }
     }
     /**
      * 会议进行的最后5分钟
      */
     @Override
     public void setDataMeetingOver(String topic, String strMessage) {
+        checkScreenOn(null);
         LogUtils.i(TAG, "topic:" + topic + ";----strMessage:" + strMessage);
         Message msg = new Message();
         msg.what = 0x3;
         handler.sendMessage(msg);
+
+        LogUtils.i(TAG, "topic:" + topic + ";----strMessage:" + strMessage);
+        if (!"".equals(strMessage) && !"[]".equals(strMessage) && strMessage != null && !TextUtils.isEmpty(strMessage)) {
+            templateId = SharePreferenceManager.getMeetingMuBanType();//读取存储的模板类型
+            curMeeting.clear();
+            curMeeting.addAll(JSON.parseArray(strMessage, MqttMeetingCurrentBean.class));
+            LogUtils.i(TAG, "===curMeeting   topic:" + topic + ";----curMeeting:" + curMeeting.toString());
+            fragmentCallBackC.TransDataC(topic, curMeeting);
+        }
     }
     /**
      * 会议结束的时刻
@@ -296,12 +314,12 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
      */
     @Override
     public void setDataCur(String topic, String strMessage) {
-        LogUtils.i("===Main", "topic:" + topic + ";----strMessage:" + strMessage);
+        LogUtils.i(TAG, "topic:" + topic + ";----strMessage:" + strMessage);
         if (!"".equals(strMessage) && !"[]".equals(strMessage) && strMessage != null && !TextUtils.isEmpty(strMessage)) {
             templateId = SharePreferenceManager.getMeetingMuBanType();//读取存储的模板类型
             curMeeting.clear();
             curMeeting.addAll(JSON.parseArray(strMessage, MqttMeetingCurrentBean.class));
-            LogUtils.i("===curMeeting", "topic:" + topic + ";----curMeeting:" + curMeeting.toString());
+            LogUtils.i(TAG, "===curMeeting   topic:" + topic + ";----curMeeting:" + curMeeting.toString());
             fragmentCallBackB.TransDataB(topic, curMeeting);
         }
     }
@@ -310,11 +328,11 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
      */
     @Override
     public void setDataToday(String topic, String strMessage) {
-        LogUtil.w("===Main", "topic:" + topic + ";----strMessage:" + strMessage);
+        LogUtils.i(TAG, "topic:" + topic + ";----strMessage:" + strMessage);
         if (!"".equals(strMessage) && !"[]".equals(strMessage) && strMessage != null && !TextUtils.isEmpty(strMessage)) {
             meetingListReceive.clear();
             meetingListReceive.addAll(JSON.parseArray(strMessage, MqttMeetingListBean.class));
-            LogUtil.w("===meetingList", "topic:" + topic + ";----meetingListReceive:" + meetingListReceive.toString());
+            LogUtils.i(TAG, "===meetingList :" + topic + ";----meetingListReceive:" + meetingListReceive.toString());
             templateId = meetingListReceive.get(0).getTemplateId();
             meetingRoomName = meetingListReceive.get(0).getRoomName();
             SharedPreferenceTools.putValuetoSP(this, CodeConstants.MEETING_ROOM_NAME,meetingRoomName);
@@ -339,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
                         meetingListBeanDao.insert(mqttMeetingListBean);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        LogUtil.w("===Exception", "插入失败" + e.getMessage());
+                        LogUtils.w(TAG, "===Exception:插入失败" + e.getMessage());
                     }
                     break;
                 case "delete":
@@ -373,9 +391,17 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
                     .between(dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 00:00:00"), dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 23:59:59")))
                     .orderAsc(MqttMeetingListBeanDao.Properties.EndDate)
                     .build().list());
-            LogUtil.w("===meetingList", "topic:" + topic + ";----meetingListQuery:" + meetingListQuery.toString());
+            LogUtils.i(TAG, "topic:" + topic + ";----meetingListQuery:" + meetingListQuery.toString());
             fragmentCallBackB.TransDataB(topic, meetingListQuery);
         }
+    }
+
+    @Override
+    public void setChangedRoomNum(String roomNum) {
+        LogUtils.i(TAG, "会议室编号改变为：" + roomNum);
+        aFragment.whenRoomNumChanged(roomNum);
+        bFragment.whenRoomNumChanged(roomNum);
+        cFragment.whenRoomNumChanged(roomNum);
     }
 
     /**
@@ -406,14 +432,13 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
         fragmentCallBackD = callBack;
     }
 
-
     private class MyViewPagerAdapter extends FragmentPagerAdapter {
         public MyViewPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
-        public Fragment getItem(int i) {
+        public android.support.v4.app.Fragment getItem(int i) {
             return frags.get(i);
         }
 
