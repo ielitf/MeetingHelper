@@ -33,7 +33,7 @@ public class CFragment extends Fragment implements  FragmentCallBackC {
     private String TAG = getClass().getSimpleName();
     private Context context;
     private DateTimeUtil dateTimeUtil;
-    private TextView room_num, time_remain;
+    private TextView room_num, time_remain,time_hour,time_minute,time_second;
     private static String roomNum;//会议室编号
     private static long durationTime, remainTime;//当前会议持续时间,剩余时间
     private Timer timeMainTimer;
@@ -55,11 +55,14 @@ public class CFragment extends Fragment implements  FragmentCallBackC {
                     break;
                 case 2://更新剩余时间显示
                     long t = (long) msg.obj;
-                    if (t >=3600000){
-                        time_remain.setText(dateTimeUtil.transTimeToClock2(t));
-                    }else{
-                        time_remain.setText(dateTimeUtil.transTimeToClock(t));
-                    }
+                    time_hour.setText(dateTimeUtil.timeToClockHH(t));
+                    time_minute.setText(dateTimeUtil.timeToClockMM(t));
+                    time_second.setText(dateTimeUtil.timeToClockSS(t));
+//                    if (t >=3600000){
+//                        time_remain.setText(dateTimeUtil.timeToClock2(t));
+//                    }else{
+//                        time_remain.setText(dateTimeUtil.timeToClock(t));
+//                    }
                     break;
                 default:
                     break;
@@ -91,6 +94,9 @@ public class CFragment extends Fragment implements  FragmentCallBackC {
     private void initViews(View view) {
         room_num = view.findViewById(R.id.room_num_c);
         time_remain = view.findViewById(R.id.time_remain_c_tv);
+        time_hour = view.findViewById(R.id.time_hour);
+        time_minute = view.findViewById(R.id.time_minute);
+        time_second = view.findViewById(R.id.time_second);
     }
 
 

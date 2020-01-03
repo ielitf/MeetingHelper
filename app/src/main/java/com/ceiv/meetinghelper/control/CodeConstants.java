@@ -2,6 +2,9 @@ package com.ceiv.meetinghelper.control;
 
 public class CodeConstants {
 
+    //中国天气网地址
+    public static  String chinaWeaUrl = "http://wthrcdn.etouch.cn/weather_mini?city=";
+
     public static String ROOM_NUMBER = "roomNumber";
     public static String IP_HOST_NEWS = "ip_host_news";
     public static String IP_HOST_APP = "ip_host_app";

@@ -52,9 +52,9 @@ public class AFragment extends Fragment implements  FragmentCallBackA {
                 case 2:
                     long t = (long) msg.obj;
                     if (t >=3600000){
-                        time_going.setText(dateTimeUtil.transTimeToClock2(t));
+                        time_going.setText(dateTimeUtil.timeToClock2(t));
                     }else{
-                        time_going.setText(dateTimeUtil.transTimeToClock(t));
+                        time_going.setText(dateTimeUtil.timeToClock(t));
                     }
                     break;
                 default:

@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="40dp"
         android:background="@drawable/time_remaining_bg"
         android:gravity="center"
         android:orientation="vertical"
@@ -28,7 +28,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:text="距离会议结束"
+            android:textStyle="bold"
             android:textSize="@dimen/time_remain_title"
             android:textColor="@color/my_back"
              />
@@ -36,7 +38,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:text="还有"
+            android:textStyle="bold"
             android:textSize="@dimen/time_remain_title"
             android:textColor="@color/my_back"
              />
@@ -45,7 +49,7 @@
             android:id="@+id/time_remaining_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:text="00:00"
             android:textColor="@color/my_orange"
             android:textSize="@dimen/time_remain"
@@ -56,7 +60,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="140dp"
+        android:layout_marginTop="160dp"
         android:orientation="vertical">
 
         <LinearLayout
@@ -98,7 +102,7 @@
                 android:id="@+id/meeting_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2019年12月4日    08:30 - 11:00"
+                android:text="08:30 - 11:00"
                 android:textColor="@color/white"
                 android:textSize="@dimen/meeting_cur" />
 
@@ -113,7 +117,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="组织部门："
+                android:text="预约部门："
                 android:textColor="@color/white"
                 android:textSize="@dimen/meeting_cur" />
 
@@ -136,7 +140,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="会议主持："
+                android:text="预约人员："
                 android:textColor="@color/white"
                 android:textSize="@dimen/meeting_cur" />
 
@@ -156,9 +160,9 @@
     <RelativeLayout
         android:id="@+id/bottom_rl"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="240dp"
         android:layout_alignParentBottom="true"
-        android:paddingLeft="20dp">
+        android:paddingLeft="40dp">
 
         <LinearLayout
             android:id="@+id/meeting_next_ll"
@@ -179,7 +183,7 @@
                 android:id="@+id/meeting_name_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:text="软件组新项目讨论会"
                 android:textSize="@dimen/meeting_next_content"
                 android:textColor="@color/black2"
@@ -189,7 +193,8 @@
                 android:id="@+id/meeting_detail_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2019年12月4日    13:30 - 16:00   会议主持:李逍遥  18210131783"
+                android:layout_marginTop="10dp"
+                android:text="2019年12月4日    13:30 - 16:00       预约人：李逍遥  18210131783"
                 android:textSize="@dimen/meeting_next_content"
                 android:textColor="@color/black2"
                 android:textStyle="bold" />

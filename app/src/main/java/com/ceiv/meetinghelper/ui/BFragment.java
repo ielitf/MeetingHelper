@@ -7,6 +7,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,8 +63,12 @@ public class BFragment extends Fragment implements FragmentCallBackB {
                         String startTime = DateTimeUtil.getInstance().transTimeToHHMM(myCurMeetingList.get(0).getStartDate());
                         String endTime = DateTimeUtil.getInstance().transTimeToHHMM(myCurMeetingList.get(0).getEndDate());
                         meeting_date.setText(startTime + "-" + endTime);
-//                        meeting_department.setText(myCurMeetingList.get(0).get);
-//                        meeting_order.setText(myCurMeetingList.get(0).get);
+                        String department = myCurMeetingList.get(0).getDepartment();
+                        if(TextUtils.isEmpty(department)){
+                            department = "未知";
+                        }
+                        meeting_department.setText(department);
+                        meeting_order.setText(myCurMeetingList.get(0).getBookPersion()+"    "+myCurMeetingList.get(0).getBookPersonPhone());
                         if (checkCurMeetingTask != null) {
                             checkCurMeetingTask.cancel();
                             checkCurMeetingTask = null;
@@ -88,9 +93,9 @@ public class BFragment extends Fragment implements FragmentCallBackB {
                 case 2://更新剩余时间显示
                    long t = (long) msg.obj;
                     if (t >=3600000){
-                        time_remain.setText(dateTimeUtil.transTimeToClock2(t));
+                        time_remain.setText(dateTimeUtil.timeToClock2(t));
                     }else{
-                        time_remain.setText(dateTimeUtil.transTimeToClock(t));
+                        time_remain.setText(dateTimeUtil.timeToClock(t));
                     }
                     break;
                 case 3://当前会议结束清空当前会议显示
@@ -103,10 +108,15 @@ public class BFragment extends Fragment implements FragmentCallBackB {
                 case 4://显示下一会议内容。
                     LogUtils.i(TAG,"今日会议size="+myMeetingList.size() +"/当前会议所在位置index="+ curIndex);
                     if((curIndex +1) < myMeetingList.size()){
-                        meeting_name_next.setText(myMeetingList.get(curIndex +1).getName());
-                        String startTime = DateTimeUtil.getInstance().transTimeToHHMM(myMeetingList.get(curIndex +1).getStartDate());
-                        String endTime = DateTimeUtil.getInstance().transTimeToHHMM(myMeetingList.get(curIndex +1).getEndDate());
-                        meeting_detail_next.setText(startTime + "-" + endTime+"   会议主持："+ myMeetingList.get(curIndex +1).getBookPerson());
+                        String department = myMeetingList.get(curIndex +1).getDepartment();
+                        if(TextUtils.isEmpty(department)){
+                            meeting_name_next.setText(myMeetingList.get(curIndex +1).getName());
+                        }else{
+                            meeting_name_next.setText(myMeetingList.get(curIndex +1).getDepartment() +"：" + myMeetingList.get(curIndex +1).getName());
+                        }
+                        String startTime = dateTimeUtil.transTimeToHHMM(myMeetingList.get(curIndex +1).getStartDate());
+                        String endTime = dateTimeUtil.transTimeToHHMM(myMeetingList.get(curIndex +1).getEndDate());
+                        meeting_detail_next.setText( dateTimeUtil.transTimeToYYMMDD2(myMeetingList.get(curIndex +1).getStartDate()) +"     " +  startTime + "-" + endTime+"     预约人："+ myMeetingList.get(curIndex +1).getBookPerson()+"  "+myMeetingList.get(curIndex +1).getBookPersonPhone());
                         meeting_detail_next.setVisibility(View.VISIBLE);
                     }else{
                         meeting_name_next.setText("暂无");
@@ -188,7 +198,7 @@ public class BFragment extends Fragment implements FragmentCallBackB {
         }
     }
     /**
-     * 从数据库中查询今日会议列表数据
+     * 从数据库中查询今日会议 以及 以后的列表数据
      */
     private List<MqttMeetingListBean> checkTodayMeeting() {
         roomNum = (String) SharedPreferenceTools.getValueofSP(context, "DeviceNum", "");//获取会议室编号
@@ -197,7 +207,8 @@ public class BFragment extends Fragment implements FragmentCallBackB {
 //            public void run() {
         meetingListQuery.clear();
         meetingListQuery.addAll(meetingListBeanDao.queryBuilder().where(MqttMeetingListBeanDao.Properties.RoomNum.eq(roomNum), MqttMeetingListBeanDao.Properties.StartDate
-                .between(dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 00:00:00"), dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 23:59:59")))
+                .ge(dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 00:00:00")))
+//                .between(dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 00:00:00"), dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 23:59:59")))
                 .orderAsc(MqttMeetingListBeanDao.Properties.EndDate)
                 .build().list());
         if (meetingListQuery.size() >= 0) {

@@ -332,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
         if (!"".equals(strMessage) && !"[]".equals(strMessage) && strMessage != null && !TextUtils.isEmpty(strMessage)) {
             meetingListReceive.clear();
             meetingListReceive.addAll(JSON.parseArray(strMessage, MqttMeetingListBean.class));
-            LogUtils.i(TAG, "===meetingList :" + topic + ";----meetingListReceive:" + meetingListReceive.toString());
+//            LogUtils.i(TAG, "===meetingList :" + topic + ";----meetingListReceive:" + meetingListReceive.toString());
             templateId = meetingListReceive.get(0).getTemplateId();
             meetingRoomName = meetingListReceive.get(0).getRoomName();
             SharedPreferenceTools.putValuetoSP(this, CodeConstants.MEETING_ROOM_NAME,meetingRoomName);
@@ -346,12 +346,14 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
                                 meetingListReceive.get(0).getId(),
                                 roomNum,
                                 meetingListReceive.get(0).getRoomName(),
+                                meetingListReceive.get(0).getDepartment(),
                                 meetingListReceive.get(0).getName(),
                                 meetingListReceive.get(0).getIsOpen(),
                                 meetingListReceive.get(0).getEndDate(),
                                 meetingListReceive.get(0).getStartDate(),
                                 meetingListReceive.get(0).getTemplateId(),
                                 meetingListReceive.get(0).getBookPerson(),
+                                meetingListReceive.get(0).getBookPersonPhone(),
                                 meetingListReceive.get(0).getSign())
                         ;
                         meetingListBeanDao.insert(mqttMeetingListBean);
@@ -375,12 +377,14 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
                             meetingListReceive.get(0).getId(),
                             roomNum,
                             meetingListReceive.get(0).getRoomName(),
+                            meetingListReceive.get(0).getDepartment(),
                             meetingListReceive.get(0).getName(),
                             meetingListReceive.get(0).getIsOpen(),
                             meetingListReceive.get(0).getEndDate(),
                             meetingListReceive.get(0).getStartDate(),
                             meetingListReceive.get(0).getTemplateId(),
                             meetingListReceive.get(0).getBookPerson(),
+                            meetingListReceive.get(0).getBookPersonPhone(),
                             meetingListReceive.get(0).getSign())
                     ;
                     meetingListBeanDao.insert(mqttMeetingListBean);
@@ -388,8 +392,11 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
             }
             meetingListQuery.clear();
             meetingListQuery.addAll(meetingListBeanDao.queryBuilder().where(MqttMeetingListBeanDao.Properties.RoomNum.eq(roomNum), MqttMeetingListBeanDao.Properties.StartDate
-                    .between(dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 00:00:00"), dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 23:59:59")))
+
+                    .ge(dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 00:00:00")))
+//                    .between(dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 00:00:00"), dateTimeUtil.transDataToTime(dateTimeUtil.getCurrentDateYYMMDD() + " 23:59:59")))
                     .orderAsc(MqttMeetingListBeanDao.Properties.EndDate)
+
                     .build().list());
             LogUtils.i(TAG, "topic:" + topic + ";----meetingListQuery:" + meetingListQuery.toString());
             fragmentCallBackB.TransDataB(topic, meetingListQuery);

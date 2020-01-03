@@ -21,15 +21,36 @@ public class DateTimeUtil {
         return instance;
     }
 
+    //将毫秒数转化为时钟
+    public String timeToClockHH(Long time) {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH");//这里想要只保留分秒可以写成"mm:ss"
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+        String hms = formatter.format(time);
+        return hms;
+    }
+    //将毫秒数转化为时钟
+    public String timeToClockMM(Long time) {
+        SimpleDateFormat formatter = new SimpleDateFormat("mm");//这里想要只保留分秒可以写成"mm:ss"
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+        String hms = formatter.format(time);
+        return hms;
+    }
+    //将毫秒数转化为时钟
+    public String timeToClockSS(Long time) {
+        SimpleDateFormat formatter = new SimpleDateFormat("ss");//这里想要只保留分秒可以写成"mm:ss"
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+        String hms = formatter.format(time);
+        return hms;
+    }
     //将毫秒数转化为时钟 分+秒
-    public String transTimeToClock(Long time) {
+    public String timeToClock(Long time) {
         SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");//这里想要只保留分秒可以写成"mm:ss"
         formatter.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
         String hms = formatter.format(time);
         return hms;
     }
     //将毫秒数转化为时钟 时+分+秒
-    public String transTimeToClock2(Long time) {
+    public String timeToClock2(Long time) {
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");//这里想要只保留分秒可以写成"mm:ss"
         formatter.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
         String hms = formatter.format(time);
@@ -61,9 +82,16 @@ public class DateTimeUtil {
         String curDate = formatter.format(date);
         return curDate;
     }
-    //将时间毫秒数转换为：年月日
+    //将时间毫秒数转换为：年-月-日
     public String transTimeToYYMMDD(long time) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date(time);
+        String curDate = formatter.format(date);
+        return curDate;
+    }
+    //将时间毫秒数转换为：yyyy年MM月dd日
+    public String transTimeToYYMMDD2(long time) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
         Date date = new Date(time);
         String curDate = formatter.format(date);
         return curDate;
@@ -78,16 +106,23 @@ public class DateTimeUtil {
     }
 
 
-    //获取系统当前日期(月日)
+    //获取系统当前日期(月-日)
     public String getCurrentDateMMDD() {
         SimpleDateFormat formatter = new SimpleDateFormat("MM-dd");
         Date date = new Date(System.currentTimeMillis());
         String curDate = formatter.format(date);
         return curDate;
     }
-    //获取系统当前日期(年月日)
+    //获取系统当前日期(年/月/日)
     public String getCurrentDateYYMMDD() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+        Date date = new Date(System.currentTimeMillis());
+        String curDate = formatter.format(date);
+        return curDate;
+    }
+    //获取系统当前日期(yyyy年MM月dd日)
+    public String getCurrentDateYYMMDD2() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
         Date date = new Date(System.currentTimeMillis());
         String curDate = formatter.format(date);
         return curDate;

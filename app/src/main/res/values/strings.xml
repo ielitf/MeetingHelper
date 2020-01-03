@@ -4,4 +4,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="rationale_write">应用程序需要往您的硬盘中进行写入操作</string>
+    <string name="meeting_tips">\n
+        1.请保持会议室的干净整洁，请勿在会议室吸烟。\n
+        2.会议室的椅子不得擅自挪用，请您使用后将桌椅放回原处。\n
+        3.离开时请将灯、空调、显示器等电源随手关闭。\n
+        4.会议结束后请检查随身物品，谨防丢失。\n
+        5.随手关门。
+    \n</string>
 </resources>
