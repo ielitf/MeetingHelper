@@ -67,11 +67,13 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements CurMeetingCallBack, TodayMeetingCallBack ,NetEvevtListener
-, MeetingStartListener, MeetingGoingListener, MeetingOverListener, MeetingEndListener, RoomNumChangeListener {
+, MeetingStartListener, MeetingGoingListener, MeetingOverListener, MeetingEndListener, RoomNumChangeListener ,
+        CustomEidtDialog.OnOffClickListener, CustomEidtDialog.OnSetClickListener {
     protected String TAG = getClass().getSimpleName();
     private static FragmentCallBackA fragmentCallBackA;
     private static FragmentCallBackB fragmentCallBackB;
@@ -194,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
            }
        }, 1000 * 60 * 30, 1000 * 60 * 60);
     }
+
     /**
      * @param view 检测并去激活设备管理器权限
      */
@@ -207,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
     /**
      * @param view 熄屏
      */
-    public void checkScreenOff(View view) {
+    public  void checkScreenOff(View view) {
         boolean admin = policyManager.isAdminActive(adminReceiver);
         if (admin) {
             LogUtils.i(TAG,"息屏");
@@ -223,6 +226,10 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
         mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
         mWakeLock.acquire(1);
         mWakeLock.release();
+    }
+
+    public  Handler getMainHandle( ){
+        return  handler;
     }
     /**
      * 获取StudentDao
@@ -439,6 +446,30 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
         fragmentCallBackD = callBack;
     }
 
+    @Override
+    public void onOffClick() {
+        checkScreenOff(null);
+
+  /*      new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                    checkScreenOn(null);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();*/
+    }
+    @Override
+    public void onSetOnclick() {
+        Intent intent = new Intent("/");
+        ComponentName cm = new ComponentName("com.android.settings","com.android.settings.Setting");
+        intent.setComponent(cm);
+        intent.setAction("com.intent.action.VIEW");
+        startActivityForResult(intent,0);
+    }
     private class MyViewPagerAdapter extends FragmentPagerAdapter {
         public MyViewPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -571,6 +602,8 @@ public class MainActivity extends AppCompatActivity implements CurMeetingCallBac
 //                    startActivity(new Intent(Settings.ACTION_SETTINGS));
                     CustomEidtDialog customEidtDialog = new CustomEidtDialog(MainActivity.this, intent);
                     customEidtDialog.show();
+                    customEidtDialog.setOnOffListener(this);
+                    customEidtDialog.setOnSetListener(this);
                     return false;
                 }
             } else {

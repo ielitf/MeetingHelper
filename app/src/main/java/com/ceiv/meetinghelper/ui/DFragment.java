@@ -4,11 +4,18 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.ceiv.meetinghelper.R;
+import com.ceiv.meetinghelper.log4j.LogUtils;
+import com.ceiv.meetinghelper.utils.LogUtil;
+import com.ceiv.meetinghelper.utils.ToastUtils;
+
 /**
  * 会议开始之前和结束之后
  */
@@ -18,6 +25,11 @@ public class DFragment extends Fragment {
 
     private String mParam1;
     private String mParam2;
+
+    private Context context;
+    private FrameLayout fragment_d;
+    long waitTime = 2000;
+    long touchTime = 0;
 
     public DFragment() {
         // Required empty public constructor
@@ -45,7 +57,9 @@ public class DFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_d, container, false);
+        View view = inflater.inflate(R.layout.fragment_d, container, false);
+        context = getContext();
+        return view;
     }
 
 

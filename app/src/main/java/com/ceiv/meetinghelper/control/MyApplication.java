@@ -21,7 +21,7 @@ import java.util.logging.Level;
 import okhttp3.OkHttpClient;
 
 public class MyApplication extends Application {
-	private static final String SHARED_PREFERENCE_NAME = "MeetingSystem_sp";
+	private static final String SHARED_PREFERENCE_NAME = "MeetingHelper_sp";
 
 	@Override
 	public void onCreate() {

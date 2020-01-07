@@ -4,15 +4,16 @@
     <dimen name="date">50sp</dimen>
     <dimen name="time_remain_title">30sp</dimen>
     <dimen name="time_remain">80sp</dimen>
-    <dimen name="time_middle_wide">220dp</dimen>
-    <dimen name="time_middle_high">280dp</dimen>
-    <dimen name="time_middle_text">150sp</dimen>
+    <dimen name="time_middle_wide">300dp</dimen>
+    <dimen name="time_middle_high">340dp</dimen>
+    <dimen name="time_middle_text">180sp</dimen>
     <dimen name="meeting_tips_text">30sp</dimen>
     <dimen name="meeting_next_title">60sp</dimen>
     <dimen name="meeting_next_content">40sp</dimen>
     <dimen name="meeting_cur">60sp</dimen>
     <dimen name="meeting_cur_margin">30dp</dimen>
     <dimen name="meeting_room_num">14sp</dimen>
+    <dimen name="weather">30sp</dimen>
 
 
     <dimen name="text_margin">16dp</dimen>

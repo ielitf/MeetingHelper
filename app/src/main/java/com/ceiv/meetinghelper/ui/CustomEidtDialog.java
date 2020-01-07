@@ -22,6 +22,8 @@ public class CustomEidtDialog extends Dialog {
     private Button yes;//确定按钮
     private Button no;//取消按钮
     private Button exit;//退出按钮
+    private Button ed_screen_off;//退出按钮
+    private Button set;//设置按钮
     private TextView titleTV;//消息标题文本
     private String titleStr;//从外界设置的title文本
     private String messageStr;//从外界设置的消息文本
@@ -36,6 +38,8 @@ public class CustomEidtDialog extends Dialog {
     private String yesStr, noStr;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
     private onYesOnclickListener yesOnclickListener;//确定按钮被点击了的监听器
+    private OnOffClickListener onOffClickListener;//息屏按钮被点击了的监听器
+    private OnSetClickListener onSetClickListener;//设置按钮被点击了的监听器
 
     public static void setOnRoomNumChangeListener(RoomNumChangeListener listener) {
         roomNumChangeListener = listener;
@@ -48,6 +52,18 @@ public class CustomEidtDialog extends Dialog {
         this.intent = intent;
     }
 
+    /**
+     * 设置按钮的监听
+     */
+    public void setOnSetListener(OnSetClickListener onSetListener) {
+        this.onSetClickListener = onSetListener;
+    }
+    /**
+     * 设置息屏按钮的显示内容和监听
+     */
+    public void setOnOffListener(OnOffClickListener onOffClickListener) {
+        this.onOffClickListener = onOffClickListener;
+    }
     /**
      * 设置取消按钮的显示内容和监听
      *
@@ -95,6 +111,8 @@ public class CustomEidtDialog extends Dialog {
         yes = findViewById(R.id.ed_yes);
         no = findViewById(R.id.ed_no);
         exit = findViewById(R.id.ed_exit);
+        ed_screen_off = findViewById(R.id.ed_screen_off);
+        set = findViewById(R.id.ed_set);
         titleTV = (TextView) findViewById(R.id.ed_title);
         ed_mqtt = findViewById(R.id.ed_mqtt);
         ed_service = findViewById(R.id.ed_service);
@@ -119,6 +137,13 @@ public class CustomEidtDialog extends Dialog {
      * 初始化界面的确定和取消监听
      */
     private void initEvent() {
+        set.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CustomEidtDialog.this.cancel();
+                onSetClickListener.onSetOnclick();
+            }
+        });
         //设置确定按钮被点击后，向外界提供监听
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,6 +184,14 @@ public class CustomEidtDialog extends Dialog {
                 CustomEidtDialog.this.cancel();
             }
         });
+
+        ed_screen_off.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CustomEidtDialog.this.cancel();
+                onOffClickListener.onOffClick();
+            }
+        });
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -178,6 +211,10 @@ public class CustomEidtDialog extends Dialog {
     }
 
     //取消按钮监听事件
+    public interface OnOffClickListener {
+        public void onOffClick();
+    }
+    //取消按钮监听事件
     public interface onNoOnclickListener {
         public void onNoClick();
     }
@@ -185,6 +222,10 @@ public class CustomEidtDialog extends Dialog {
     //确定按钮监听事件
     public interface onYesOnclickListener {
         public void onYesOnclick();
+    }
+    //确定按钮监听事件
+    public interface OnSetClickListener {
+        public void onSetOnclick();
     }
 
 }

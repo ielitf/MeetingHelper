@@ -82,7 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="60dp"
             android:orientation="horizontal">
 
             <TextView
@@ -93,7 +93,9 @@
                 android:gravity="center"
                 android:text="00"
                 android:textColor="@color/white"
-                android:textSize="@dimen/time_middle_text" />
+                android:textSize="@dimen/time_middle_text"
+                android:visibility="gone"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -101,7 +103,8 @@
                 android:gravity="center"
                 android:text=":"
                 android:textColor="@color/white"
-                android:textSize="100sp" />
+                android:textSize="100sp"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/time_minute"
@@ -110,12 +113,14 @@
                 android:background="@mipmap/ic_time_back"
                 android:gravity="center"
                 android:text="00"
-                android:textColor="@color/white"
+                android:textColor="@color/yellow"
                 android:textSize="@dimen/time_middle_text" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
                 android:gravity="center"
                 android:text=":"
                 android:textColor="@color/white"
@@ -128,7 +133,7 @@
                 android:background="@mipmap/ic_time_back"
                 android:gravity="center"
                 android:text="00"
-                android:textColor="@color/white"
+                android:textColor="@color/yellow"
                 android:textSize="@dimen/time_middle_text" />
 
         </LinearLayout>
@@ -137,7 +142,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="60dp"
             android:background="@mipmap/ic_tips_back"
             android:gravity="center_vertical"
             android:orientation="horizontal"

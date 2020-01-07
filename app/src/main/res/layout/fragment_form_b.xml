@@ -30,20 +30,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="距离会议结束"
-            android:textStyle="bold"
-            android:textSize="@dimen/time_remain_title"
             android:textColor="@color/my_back"
-             />
+            android:textSize="@dimen/time_remain_title"
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="还有"
-            android:textStyle="bold"
-            android:textSize="@dimen/time_remain_title"
             android:textColor="@color/my_back"
-             />
+            android:textSize="@dimen/time_remain_title"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/time_remaining_tv"
@@ -162,6 +160,7 @@
         android:layout_width="match_parent"
         android:layout_height="240dp"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
         android:paddingLeft="40dp">
 
         <LinearLayout
@@ -185,8 +184,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="软件组新项目讨论会"
-                android:textSize="@dimen/meeting_next_content"
                 android:textColor="@color/black2"
+                android:textSize="@dimen/meeting_next_content"
                 android:textStyle="bold" />
 
             <TextView
@@ -195,8 +194,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="2019年12月4日    13:30 - 16:00       预约人：李逍遥  18210131783"
-                android:textSize="@dimen/meeting_next_content"
                 android:textColor="@color/black2"
+                android:textSize="@dimen/meeting_next_content"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -205,8 +204,9 @@
             android:layout_height="match_parent"
             android:layout_marginTop="14dp"
             android:layout_marginBottom="14dp"
+            android:layout_toStartOf="@+id/weather"
             android:background="@color/my_back"
-            android:layout_toStartOf="@+id/QR_code"
+            android:visibility="gone"
             />
 
         <ImageView
@@ -216,8 +216,11 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:src="@mipmap/erweima_a_h"
+            android:visibility="gone" />
 
-            />
+        <include
+            android:id="@+id/weather"
+            layout="@layout/weather" />
 
     </RelativeLayout>
 
@@ -225,8 +228,8 @@
         android:id="@+id/room_num"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_above="@+id/bottom_rl"
+        android:layout_alignParentEnd="true"
         android:layout_margin="5dp"
         android:text="会议室编号：999"
         android:textColor="@color/white"

@@ -78,6 +78,28 @@
                 android:textColor="@color/my_blue"
                 android:textSize="16sp"/>
             <Button
+                android:id="@+id/ed_screen_off"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:lines="1"
+                android:text="息屏"
+                android:textColor="@color/my_blue"
+                android:textSize="16sp"/>
+            <Button
+                android:id="@+id/ed_set"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:lines="1"
+                android:text="设置"
+                android:textColor="@color/my_blue"
+                android:textSize="16sp"
+                android:visibility="gone"
+                />
+            <Button
                 android:id="@+id/ed_exit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
